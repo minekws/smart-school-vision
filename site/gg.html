@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Customer List</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f7f8fa;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        
+        .main {
+            flex: 2;
+            padding: 32px 32px 32px 32px;
+            background: #f7f8fa;
+        }
+        
+        .sidebar {
+            flex: 1;
+            background: #fff;
+            padding: 32px 24px;
+            border-left: 1px solid #f0f0f0;
+            min-width: 300px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+        
+        .add-btn {
+            background: #6c63ff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 28px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .add-btn:hover {
+            background: #554ee2;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+        
+        th,
+        td {
+            text-align: left;
+            padding: 14px 16px;
+            background: #fff;
+            font-size: 1rem;
+        }
+        
+        th {
+            color: #888;
+            font-weight: 600;
+            background: transparent;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        tr {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        
+        td {
+            vertical-align: middle;
+            border-radius: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+            vertical-align: middle;
+        }
+        
+        .name-cell {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        
+        .male {
+            background: #e6f0ff;
+            color: #4a7aff;
+        }
+        
+        .female {
+            background: #ffe6f0;
+            color: #ff4a7a;
+        }
+        
+        .actions {
+            position: relative;
+        }
+        
+        .dots {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #bbb;
+        }
+        
+        .dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            z-index: 10;
+            min-width: 100px;
+        }
+        
+        .dropdown.show {
+            display: block;
+        }
+        
+        .dropdown button {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 1em;
+            cursor: pointer;
+            color: #333;
+            transition: background 0.2s;
+        }
+        
+        .dropdown button:hover {
+            background: #f7f8fa;
+        }
+        /* Sidebar */
+        
+        .profile {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .profile img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            margin-bottom: 12px;
+        }
+        
+        .profile h3 {
+            margin: 0;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .profile p {
+            margin: 4px 0 0 0;
+            color: #888;
+            font-size: 1em;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+        
+        .sidebar-section h4 {
+            margin: 0 0 12px 0;
+            font-size: 1em;
+            color: #888;
+            font-weight: 600;
+        }
+        
+        .sidebar-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 1em;
+        }
+        
+        .sidebar-section li {
+            margin-bottom: 10px;
+            color: #444;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-section li svg {
+            margin-right: 8px;
+            color: #6c63ff;
+        }
+        
+        .performance {
+            background: #f7f8fa;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .performance-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 60px;
+            margin-bottom: 12px;
+        }
+        
+        .bar {
+            width: 16px;
+            border-radius: 6px 6px 0 0;
+            background: #ffb366;
+            margin: 0 2px;
+            display: inline-block;
+        }
+        
+        .bar.active {
+            background: #ff6c63;
+            height: 48px !important;
+        }
+        
+        .bar1 {
+            height: 30px;
+        }
+        
+        .bar2 {
+            height: 48px;
+        }
+        
+        .bar3 {
+            height: 36px;
+        }
+        
+        .bar4 {
+            height: 28px;
+        }
+        
+        .bar5 {
+            height: 22px;
+        }
+        
+        .circle-progress {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+        }
+        
+        .circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fff;
+            border: 6px solid #e6f0ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6c63ff;
+            font-size: 1.1em;
+            position: relative;
+        }
+        
+        .circle:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 6px solid #ffb366;
+            border-top-color: transparent;
+            transform: rotate(-45deg);
+        }
+        
+        .circle:last-child {
+            border-color: #ffe6f0;
+            color: #ff4a7a;
+        }
+        
+        .circle:last-child:after {
+            border-color: #ffb366;
+            border-top-color: transparent;
+            transform: rotate(45deg);
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                border-left: none;
+                border-top: 1px solid #f0f0f0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main">
+            <div class="header">
+                <h2>Customer List</h2>
+                <button class="add-btn">+ Add Customer</button>
+            </div>
+            <table id="customerTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Name &#x25B2;&#x25BC;</th>
+                        <th onclick="sortTable(1)">Email &#x25B2;&#x25BC;</th>
+                        <th onclick="sortTable(2)">Phone number &#x25B2;&#x25BC;</th>
+                        <th onclick="sortTable(3)">Gender &#x25B2;&#x25BC;</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example row -->
+                    <tr>
+                        <td class="name-cell"><img class="avatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="">John Deo</td>
+                        <td>johndoe2211@gmail.com</td>
+                        <td>+33757005467</td>
+                        <td><span class="badge male">Male</span></td>
+                        <td class="actions">
+                            <button class="dots" onclick="toggleDropdown(this)">⋮</button>
+                            <div class="dropdown">
+                                <button>Edit</button>
+                                <button style="color:#ff4a7a;">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name-cell"><img class="avatar" src="https://randomuser.me/api/portraits/women/2.jpg" alt="">Shelby Goode</td>
+                        <td>shelbygoode481@gmail.com</td>
+                        <td>+33757005467</td>
+                        <td><span class="badge female">Female</span></td>
+                        <td class="actions">
+                            <button class="dots" onclick="toggleDropdown(this)">⋮</button>
+                            <div class="dropdown">
+                                <button>Edit</button>
+                                <button style="color:#ff4a7a;">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name-cell"><img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="">Robert Bacins</td>
+                        <td>robertbacins4182@e.com</td>
+                        <td>+33757005467</td>
+                        <td><span class="badge male">Male</span></td>
+                        <td class="actions">
+                            <button class="dots" onclick="toggleDropdown(this)">⋮</button>
+                            <div class="dropdown">
+                                <button>Edit</button>
+                                <button style="color:#ff4a7a;">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name-cell"><img class="avatar" src="https://randomuser.me/api/portraits/men/4.jpg" alt="">John Carilo</td>
+                        <td>john.carlo182@q.com</td>
+                        <td>+33757805467</td>
+                        <td><span class="badge male">Male</span></td>
+                        <td class="actions">
+                            <button class="dots" onclick="toggleDropdown(this)">⋮</button>
+                            <div class="dropdown">
+                                <button>Edit</button>
+                                <button style="color:#ff4a7a;">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name-cell"><img class="avatar" src="https://randomuser.me/api/portraits/women/5.jpg" alt="">Adriene Watson</td>
+                        <td>adrienewatson2@q.com</td>
+                        <td>+83757305467</td>
+                        <td><span class="badge female">Female</span></td>
+                        <td class="actions">
+                            <button class="dots" onclick="toggleDropdown(this)">⋮</button>
+                            <div class="dropdown">
+                                <button>Edit</button>
+                                <button style="color:#ff4a7a;">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+        <div class="sidebar">
+            <div class="profile">
+                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+                <h3>John Deo</h3>
+                <p>UI/UX Designer</p>
+            </div>
+            <div class="sidebar-section">
+                <h4>Contact Info</h4>
+                <ul>
+                    <li>
+                        <svg width="18" height="18" fill="none"><circle cx="9" cy="9" r="8" stroke="#6c63ff" stroke-width="2"/><circle cx="9" cy="9" r="3" fill="#6c63ff"/></svg> kajope5182@ummoh.com
+                    </li>
+                    <li>
+                        <svg width="18" height="18" fill="none"><rect x="3" y="3" width="12" height="12" rx="3" stroke="#6c63ff" stroke-width="2"/></svg> 33757005467
+                    </li>
+                    <li>
+                        <svg width="18" height="18" fill="none"><path d="M9 2C5.13 2 2 5.13 2 9c0 3.87 3.13 7 7 7s7-3.13 7-7c0-3.87-3.13-7-7-7zm0 12c-2.76 0-5-2.24-5-5 0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.76-2.24 5-5 5z" fill="#6c63ff"/></svg> 2239 Hog Camp
+                        Road Schaumburg
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-section performance">
+                <div class="performance-bar">
+                    <div class="bar bar1"></div>
+                    <div class="bar bar2 active"></div>
+                    <div class="bar bar3"></div>
+                    <div class="bar bar4"></div>
+                    <div class="bar bar5"></div>
+                </div>
+                <div style="font-size:0.9em;color:#ff6c63;margin-bottom:8px;">2,318</div>
+                <div style="font-size:0.9em;color:#888;">Performance</div>
+                <div class="circle-progress">
+                    <div class="circle">70%</div>
+                    <div class="circle">60%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Dropdown actions
+        function toggleDropdown(btn) {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
+            btn.nextElementSibling.classList.toggle('show');
+            event.stopPropagation();
+        }
+        document.body.addEventListener('click', function() {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
+        });
+
+        // Table sorting
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("customerTable");
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerText.toLowerCase() > y.innerText.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerText.toLowerCase() < y.innerText.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

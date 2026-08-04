@@ -1,0 +1,53 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime data and logs
+*.db
+*.db-*
+*.log
+users/
+data/
+lists/
+список/
+uploads/
+known_faces/
+static/images/
+static/список/
+аи/known_faces/
+аи/uploads/
+аи/instance/
+
+# ML weights and generated training artifacts
+*.pt
+*.pth
+*.onnx
+*.engine
+build/
+dist/
+*.spec
+*.exe
+
+# Local IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Graphify temporary extraction files
+.graphify_*
+graphify-out/.graphify*
+!graphify-out/GRAPH_REPORT.md
+!graphify-out/graph.json
+!graphify-out/graph.html
+!graphify-out/cost.json

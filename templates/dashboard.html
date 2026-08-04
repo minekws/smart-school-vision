@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartVision Панель</title>
+    <link rel="stylesheet" href="/static/styles3.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div>
+            <div class="logo-container">
+                <img src="/static/ima/icon.svg" alt="icon">
+                <div class="logo-text">
+                    <h1>SmartVision</h1>
+                    <p>Edge AI System</p>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="switchTab('dashboard', this)"><i class="fa-solid fa-border-all"></i>Панель</a>
+                <a href="#" class="nav-item" onclick="switchTab('cameras', this)"><i class="fa-solid fa-video"></i> Камеры</a>
+            </nav>
+        </div>
+
+        <div class="user-profile">
+            <img src="/static/ima/ic3.svg" alt="Avatar">
+            <div class="user-info">
+                <p class="name">Админ</p>
+                <p class="role">Гл. Оператор</p>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h2 id="page-title">Панлеь управления</h2>
+                <span id="system-status-badge" class="badge online"><i class="fa-solid fa-circle text-[8px]"></i> ONLINE</span>
+                <button id="power-btn" class="btn btn-danger"><i class="fa-solid fa-power-off"></i> <span>Stop System</span></button>
+            </div>
+            <div class="header-right">
+                <div class="stat-item">
+                    <p class="label">CPU Load</p>
+                    <p class="value" id="cpu-load">0%</p>
+                </div>
+                <div class="stat-item">
+                    <p class="label">RAM Usage</p>
+                    <p class="value" id="ram-load">0 GB</p>
+                </div>
+            </div>
+        </header>
+
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="col-8">
+                    <div class="row-2">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-sliders"></i> AI Core Control</h3>
+                            <div class="toggle-row">
+                                <span><i class="fa-solid fa-user-check"></i> Face ID</span>
+                                <div class="toggle-wrapper"><input type="checkbox" id="toggle-face" class="toggle-checkbox"><label for="toggle-face" class="toggle-label"></label></div>
+                            </div>
+                            <div class="toggle-row">
+                                <span><i class="fa-solid fa-face-smile"></i> Emotion AI</span>
+                                <div class="toggle-wrapper"><input type="checkbox" id="toggle-emotion" class="toggle-checkbox"><label for="toggle-emotion" class="toggle-label"></label></div>
+                            </div>
+                            <div class="toggle-row danger-row">
+                                <span><i class="fa-solid fa-gun"></i> Weapon Detect</span>
+                                <div class="toggle-wrapper"><input type="checkbox" id="toggle-weapon" class="toggle-checkbox danger-toggle"><label for="toggle-weapon" class="toggle-label"></label></div>
+                            </div>
+                            <div class="toggle-row">
+                                <span><i class="fa-solid fa-child-reaching"></i> Pose Estimate</span>
+                                <div class="toggle-wrapper"><input type="checkbox" id="toggle-pose" class="toggle-checkbox"><label for="toggle-pose" class="toggle-label"></label></div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="display: flex; flex-direction: column;">
+                            <h3 style="margin-bottom: 0;"><i class="fa-solid fa-chart-line"></i> FPS Live</h3>
+                            <div class="chart-container"><canvas id="fpsChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fa-solid fa-table-cells-large"></i> Трансляция (Основная камера)</h3>
+                        <div class="camera-grid" style="grid-template-columns: 1fr;">
+
+                            <div class="camera-box" id="main-camera-container">
+                                <span class="camera-label">CAM 0 - MAIN</span>
+                                <img src="/01/camera/0/video_feed" style="width: 100%; height: 100%; object-fit: cover;" alt="Camera Stream" onerror="setTimeout(() => { this.src = '/01/camera/0/video_feed?' + new Date().getTime(); }, 2000);">
+
+                                <div id="sleep-overlay" class="sleep-overlay">
+                                    <div class="sleep-icon"><i class="fa-solid fa-moon"></i></div>
+                                    <h4>System Paused</h4>
+                                    <p>Камеры отключены</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <h3 style="margin: 0;">Журнал событий</h3>
+                            <button onclick="document.getElementById('event-logs').innerHTML=''" style="background:none; border:none; color:#94a3b8; cursor:pointer;">Очистить</button>
+                        </div>
+                        <div class="logs-container" id="event-logs"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="tab-cameras" class="tab-content">
+            <div class="all-cameras-grid" id="all-cameras-grid">
+                <div class="camera-box">
+                    <span class="camera-label">CAMERA 0</span>
+                    <img src="/01/camera/0/video_feed" style="width: 100%; height: 100%; object-fit: cover;" onerror="setTimeout(() => { this.src = '/01/camera/0/video_feed?' + new Date().getTime(); }, 2000);" alt="camera">
+                    <img src="/01/camera/1/video_feed" style="width: 100%; height: 100%; object-fit: cover;" onerror="setTimeout(() => { this.src = '/01/camera/1/video_feed?' + new Date().getTime(); }, 2000);" alt="camera">
+                    <img src="/01/camera/2/video_feed" style="width: 100%; height: 100%; object-fit: cover;" onerror="setTimeout(() => { this.src = '/01/camera/2/video_feed?' + new Date().getTime(); }, 2000);" alt="camera">
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
+            const titles = {
+                'dashboard': 'Дашборд управления',
+                'cameras': 'Все камеры (Live)',
+                'database': 'Управление базой лиц'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+        }
+
+        const ctx = document.getElementById('fpsChart').getContext('2d');
+        const fpsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    label: 'FPS',
+                    data: Array(20).fill(0),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: true,
+                        min: 0,
+                        max: 40
+                    }
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+
+        document.querySelectorAll('.toggle-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', function(e) {
+                e.preventDefault();
+                const checkbox = this.querySelector('.toggle-checkbox');
+                const label = this.querySelector('.toggle-label');
+                checkbox.checked = !checkbox.checked;
+
+                if (checkbox.checked) {
+                    label.classList.add('is-active');
+                } else {
+                    label.classList.remove('is-active');
+                }
+
+                checkbox.dataset.isUpdating = "true";
+                setTimeout(() => {
+                    checkbox.dataset.isUpdating = "false";
+                }, 1500);
+
+                const moduleName = checkbox.id.replace('toggle-', '');
+                fetch('/01/api/toggle_module', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        module: moduleName,
+                        state: checkbox.checked
+                    })
+                });
+            });
+        });
+
+        const powerBtn = document.getElementById('power-btn');
+        powerBtn.addEventListener('click', () => {
+            if (confirm("Остановить систему и выключить нейросети?")) {
+                powerBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Выключение...';
+                powerBtn.disabled = true;
+                window.location.href = "http://127.0.0.1:5050/stop";
+            }
+        });
+
+        setInterval(() => {
+            fetch("/01/api/stats")
+                .then(res => res.json())
+                .then(data => {
+
+                    document.getElementById('cpu-load').innerText = data.cpu + '%';
+                    document.getElementById('ram-load').innerText = data.ram + ' GB';
+
+                    const modulesList = ['face', 'emotion', 'weapon', 'pose'];
+                    modulesList.forEach(mod => {
+                        const checkbox = document.getElementById('toggle-' + mod);
+                        if (checkbox && checkbox.dataset.isUpdating !== "true") {
+
+                            const serverState = data.modules[mod];
+                            if (checkbox.checked !== serverState) {
+                                checkbox.checked = serverState;
+                                const label = checkbox.nextElementSibling;
+                                if (label) {
+                                    if (serverState) {
+                                        label.classList.add('is-active');
+                                    } else {
+                                        label.classList.remove('is-active');
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    fpsChart.data.datasets[0].data.push(data.fps);
+                    fpsChart.data.datasets[0].data.shift();
+                    fpsChart.update();
+
+                    const sleepOverlay = document.getElementById('sleep-overlay');
+                    if (sleepOverlay) {
+                        if (!data.system_active) {
+                            sleepOverlay.classList.add('active');
+                        } else {
+                            sleepOverlay.classList.remove('active');
+                        }
+                    }
+
+                    const logsDiv = document.getElementById('event-logs');
+                    data.logs.forEach(log => {
+                        const div = document.createElement('div');
+                        const time = new Date().toLocaleTimeString();
+
+                        if (log.type === "critical") {
+                            div.className = "log-item log-critical";
+                            div.innerHTML = `<div class="title"><i class="fa-solid fa-triangle-exclamation"></i> ${time}</div><div>${log.message}</div>`;
+                        } else {
+                            div.className = "log-item log-normal";
+                            div.innerHTML = `<span class="time">[${time}]</span> ${log.message}`;
+                        }
+
+                        logsDiv.prepend(div);
+                        if (logsDiv.children.length > 50) logsDiv.lastChild.remove();
+                    });
+                })
+                .catch(err => {
+                    console.log("Ожидание сервера...");
+                });
+        }, 1000);
+    </script>
+</body>
+
+</html>

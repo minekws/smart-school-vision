@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аутентификация</title>
+    <link rel="icon" href="/static/img/icon.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900">
+    <main class="flex items-center justify-center min-h-screen p-4">
+        <div class="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex overflow-hidden">
+            <div class="hidden md:flex flex-col justify-center items-center w-1/2 bg-indigo-600 text-white p-12">
+                <h1 class="text-4xl font-bold mb-4 text-center">Добро пожаловать!</h1>
+                <p class="text-indigo-200 text-center">Войдите или зарегистрируйтесь, чтобы получить доступ к платформе.</p>
+                <div class="mt-8 w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
+                    <i data-lucide="user-plus" class="w-16 h-16 text-white/50"></i>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 p-8 md:p-12">
+                <h2 id="form-title" class="text-3xl font-bold text-slate-800 dark:text-white mb-4">Вход</h2>
+
+                <div class="flex border border-slate-200 dark:border-slate-700 rounded-lg p-1 mb-6">
+                    <button id="login-tab" type="button" class="w-1/2 py-2 text-sm font-semibold rounded-md focus:outline-none transition-colors duration-300">Вход</button>
+                    <button id="register-tab" type="button" class="w-1/2 py-2 text-sm font-semibold rounded-md focus:outline-none transition-colors duration-300">Регистрация</button>
+                </div>
+
+                <div id="role-selector" class="mb-6 hidden">
+                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Выберите тип аккаунта:</p>
+                    <div class="flex border border-slate-200 dark:border-slate-700 rounded-lg p-1">
+                        <button id="student-role-tab" type="button" class="w-1/2 py-2 text-sm font-semibold rounded-md focus:outline-none transition-colors duration-300">Ученик</button>
+                        <button id="moderator-role-tab" type="button" class="w-1/2 py-2 text-sm font-semibold rounded-md focus:outline-none transition-colors duration-300">Модератор</button>
+                    </div>
+                </div>
+
+                <form id="auth-form" class="space-y-4" novalidate>
+                    <div id="login-fields">
+                        <div class="relative flex items-center">
+                            <span class="absolute left-4"><i data-lucide="at-sign" class="w-4 h-4 text-slate-400"></i></span>
+                            <input id="login-identifier" name="loginIdentifier" placeholder="Email или Camera ID" autocomplete="username" aria-label="Идентификатор" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                required>
+                        </div>
+                        <div class="relative flex items-center mt-4">
+                            <span class="absolute left-4"><i data-lucide="lock" class="w-4 h-4 text-slate-400"></i></span>
+                            <input id="login-password" type="password" name="loginPassword" placeholder="Пароль" autocomplete="current-password" aria-label="Пароль" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                required>
+                        </div>
+                    </div>
+
+                    <div id="register-fields" class="hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="relative flex items-center">
+                                <span class="absolute left-4"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i></span>
+                                <input id="register-firstName" type="text" name="firstName" placeholder="Имя" autocomplete="given-name" aria-label="Имя" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                    required>
+                            </div>
+                            <div class="relative flex items-center">
+                                <span class="absolute left-4"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i></span>
+                                <input id="register-lastName" type="text" name="lastName" placeholder="Фамилия" autocomplete="family-name" aria-label="Фамилия" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div id="student-specific-fields">
+                            <div class="relative flex items-center mb-4">
+                                <span class="absolute left-4"><i data-lucide="at-sign" class="w-4 h-4 text-slate-400"></i></span>
+                                <input id="register-email" type="email" name="email" placeholder="Email" autocomplete="email" aria-label="Email" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                    required>
+                            </div>
+                            <div class="relative flex items-center mb-4">
+                                <span class="absolute left-4"><i data-lucide="key-round" class="w-4 h-4 text-slate-400"></i></span>
+                                <input id="register-invite-code" type="text" name="inviteCode" placeholder="Код-приглашение" autocomplete="one-time-code" aria-label="Код-приглашение" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                    required>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <label for="register-photo" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Фото ученика</label>
+                                <input id="register-photo" type="file" accept="image/*" class="hidden" aria-label="Фото ученика">
+                                <label for="register-photo" class="cursor-pointer inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                <i data-lucide="image" class="w-4 h-4"></i>
+                Загрузить фото
+              </label>
+                                <span id="file-name" class="text-sm text-slate-500 dark:text-slate-400"></span>
+                                <img id="photo-preview" class="mt-2 max-h-40 rounded-lg hidden border border-slate-200 dark:border-slate-700" alt="photprev" />
+                            </div>
+                        </div>
+
+                        <div id="moderator-specific-fields" class="hidden">
+                            <div class="relative flex items-center">
+                                <span class="absolute left-4"><i data-lucide="camera" class="w-4 h-4 text-slate-400"></i></span>
+                                <input id="register-cameraId" type="text" name="cameraId" placeholder="Camera ID" autocomplete="off" aria-label="Camera ID" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="relative flex items-center mt-4">
+                            <span class="absolute left-4"><i data-lucide="lock" class="w-4 h-4 text-slate-400"></i></span>
+                            <input id="register-password" type="password" name="password" placeholder="Пароль" autocomplete="new-password" aria-label="Пароль" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                required>
+                        </div>
+                        <div class="relative flex items-center mt-4">
+                            <span class="absolute left-4"><i data-lucide="lock" class="w-4 h-4 text-slate-400"></i></span>
+                            <input id="register-confirmPassword" type="password" name="confirmPassword" placeholder="Подтвердите пароль" autocomplete="new-password" aria-label="Подтверждение пароля" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+                                required>
+                        </div>
+                    </div>
+
+                    <div id="message-container" aria-live="polite"></div>
+
+                    <button id="submit-button" type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-indigo-800 transition-all duration-300 flex items-center justify-center gap-2">
+          <span id="submit-icon-host" class="inline-flex"><i data-lucide="log-in" class="w-[18px] h-[18px]"></i></span>
+          <span id="submit-text">Войти</span>
+        </button>
+                </form>
+
+                <p id="forgot-password-link" class="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
+                    Забыли пароль? <a href="https://video-preview.s3.yandex.net/kHkvIwIAAAA.mp4" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Восстановить</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            'use strict';
+
+            const WS_URL = (location.protocol === 'https:' ? 'wss' : 'ws') + '://127.0.0.1:8005/ws';
+            const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+            let mode = 'login';
+            let role = 'student';
+
+            const showMessage = (text, type) => {
+                const container = document.getElementById('message-container');
+                container.textContent = '';
+                const p = document.createElement('p');
+                p.className = type === 'error' ?
+                    'text-sm text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 p-3 rounded-lg' :
+                    'text-sm text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 p-3 rounded-lg';
+                p.textContent = String(text || '');
+                container.appendChild(p);
+            };
+
+            const readFileAsDataURL = (file) => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            const setSubmitIcon = (name) => {
+                const host = document.getElementById('submit-icon-host');
+                host.innerHTML = '';
+                const i = document.createElement('i');
+                i.setAttribute('data-lucide', name);
+                i.className = 'w-[18px] h-[18px]';
+                host.appendChild(i);
+                if (window.lucide && typeof lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                }
+            };
+
+            const saveUserData = (userData) => {
+                if (!userData || typeof userData !== 'object') return;
+
+                const {
+                    token,
+                    username,
+                    userName,
+                    role,
+                    email,
+                    cameraId,
+                    firstName,
+                    lastName
+                } = userData;
+
+                if (token) localStorage.setItem('auth_token', token);
+
+                const displayName =
+                    username || userName || [firstName, lastName].filter(Boolean).join(' ') || '';
+
+                if (displayName) localStorage.setItem('username', displayName);
+                if (role) localStorage.setItem('userRole', role);
+                if (email) localStorage.setItem('userEmail', email);
+                if (cameraId) localStorage.setItem('cameraId', cameraId);
+                if (firstName) localStorage.setItem('firstName', firstName);
+                if (lastName) localStorage.setItem('lastName', lastName);
+
+                localStorage.setItem('authTime', new Date().toISOString());
+                localStorage.setItem('userData', JSON.stringify({
+                    token,
+                    username: displayName,
+                    role,
+                    email,
+                    cameraId,
+                    firstName,
+                    lastName,
+                    authTime: new Date().toISOString()
+                }));
+            };
+
+            // ---------- Работа с фото: имя + предпросмотр ----------
+            const fileInput = document.getElementById('register-photo');
+            const fileName = document.getElementById('file-name');
+            const photoPreview = document.getElementById('photo-preview');
+            let previewUrl = null;
+
+            fileInput.addEventListener('change', () => {
+                if (previewUrl) {
+                    URL.revokeObjectURL(previewUrl);
+                    previewUrl = null;
+                }
+                const [file] = fileInput.files;
+                if (file) {
+                    if (!file.type.startsWith('image/')) {
+                        showMessage('Можно загружать только изображения.', 'error');
+                        fileInput.value = '';
+                        photoPreview.classList.add('hidden');
+                        photoPreview.src = '';
+                        fileName.textContent = '';
+                        return;
+                    }
+                    if (file.size > MAX_FILE_SIZE) {
+                        showMessage('Файл слишком большой (максимум 5 МБ).', 'error');
+                        fileInput.value = '';
+                        photoPreview.classList.add('hidden');
+                        photoPreview.src = '';
+                        fileName.textContent = '';
+                        return;
+                    }
+                    fileName.textContent = file.name;
+                    previewUrl = URL.createObjectURL(file);
+                    photoPreview.src = previewUrl;
+                    photoPreview.classList.remove('hidden');
+                } else {
+                    fileName.textContent = '';
+                    photoPreview.classList.add('hidden');
+                    photoPreview.src = '';
+                }
+            });
+
+            const actionToType = (action) => {
+                switch (action) {
+                    case 'login_success':
+                    case 'no_login_success':
+                    case 'login_failed':
+                        return 'login';
+                    case 'register_success':
+                    case 'no_register_success':
+                    case 'register_failed':
+                        return 'register';
+                    case 'xto_ya':
+                        return 'xto_ya';
+                    default:
+                        return null;
+                }
+            };
+
+            class WebSocketClient {
+                constructor(url) {
+                    this.url = url;
+                    this.ws = null;
+                    this.reconnectInterval = 5000;
+                    this.shouldReconnect = true;
+
+                    this.queue = [];
+                    this.pendingById = new Map();
+                    this.pendingByType = new Map();
+                    this.nextId = 1;
+
+                    this.connect();
+                }
+
+                get ready() {
+                    return this.ws && this.ws.readyState === WebSocket.OPEN;
+                }
+
+                connect() {
+                    try {
+                        this.ws = new WebSocket(this.url);
+
+                        this.ws.onopen = () => {
+
+                            const token = localStorage.getItem('auth_token');
+                            if (token) {
+
+                                this._send({
+                                    type: 'xto_ya',
+                                    data: {
+                                        token
+                                    }
+                                });
+                            }
+
+                            for (const payload of this.queue.splice(0)) {
+                                this._send(payload);
+                            }
+                        };
+
+                        this.ws.onmessage = (event) => {
+                            let data;
+                            try {
+                                data = JSON.parse(event.data);
+                            } catch (e) {
+                                return;
+                            }
+
+                            if (data && typeof data.id !== 'undefined' && this.pendingById.has(data.id)) {
+                                const pending = this.pendingById.get(data.id);
+                                clearTimeout(pending.timer);
+                                this.pendingById.delete(data.id);
+                                pending.resolve(data);
+                                return;
+                            }
+
+                            if (data && data.action === 'set_cookie') {
+                                const parts = [
+                                    `${data.name}=${data.value ?? ''}`,
+                                    `Path=${data.path || '/'}`
+                                ];
+                                if (typeof data.max_age === 'number' && data.max_age > 0) {
+                                    parts.push(`Max-Age=${data.max_age}`);
+                                }
+
+                                if (data.sameSite) parts.push(`SameSite=${data.sameSite}`);
+                                if (data.secure) parts.push('Secure');
+                                document.cookie = parts.join('; ');
+
+                                this.reconnect();
+                                return;
+                            }
+                            if (data && data.action === 'clear_cookie') {
+                                document.cookie = `${data.name}=; Max-Age=0; Path=${data.path || '/'}`;
+                                return;
+                            }
+
+                            if (data && data.action) {
+                                const type = actionToType(data.action);
+                                if (type) {
+                                    const queue = this.pendingByType.get(type);
+                                    if (queue && queue.length > 0) {
+                                        const pending = queue.shift();
+                                        clearTimeout(pending.timer);
+
+                                        if (data.action.endsWith('_success')) {
+                                            pending.resolve(data);
+                                        } else {
+
+                                            const msg = data.error || 'Операция не выполнена';
+                                            pending.reject(new Error(msg));
+                                        }
+                                    }
+                                }
+                            }
+                        };
+
+                        this.ws.onerror = () => {
+
+                            for (const [, pending] of this.pendingById) {
+                                pending.reject(new Error('Ошибка соединения'));
+                                clearTimeout(pending.timer);
+                            }
+                            this.pendingById.clear();
+
+                            for (const [, queue] of this.pendingByType) {
+                                while (queue.length) {
+                                    const pending = queue.shift();
+                                    pending.reject(new Error('Ошибка соединения'));
+                                    clearTimeout(pending.timer);
+                                }
+                            }
+                        };
+
+                        this.ws.onclose = () => {
+                            for (const [, pending] of this.pendingById) {
+                                pending.reject(new Error('Соединение закрыто'));
+                                clearTimeout(pending.timer);
+                            }
+                            this.pendingById.clear();
+
+                            for (const [, queue] of this.pendingByType) {
+                                while (queue.length) {
+                                    const pending = queue.shift();
+                                    pending.reject(new Error('Соединение закрыто'));
+                                    clearTimeout(pending.timer);
+                                }
+                            }
+
+                            if (this.shouldReconnect) {
+                                setTimeout(() => this.connect(), this.reconnectInterval);
+                            }
+                        };
+                    } catch (error) {
+                        if (this.shouldReconnect) {
+                            setTimeout(() => this.connect(), this.reconnectInterval);
+                        }
+                    }
+                }
+
+                sendWithResponse(type, data, timeoutMs = 30000) {
+
+                    const id = this.nextId++;
+                    const payload = {
+                        id,
+                        type,
+                        data: {...data,
+                            timestamp: new Date().toISOString()
+                        }
+                    };
+
+                    return new Promise((resolve, reject) => {
+
+                        const timer = setTimeout(() => {
+
+                            if (this.pendingById.has(id)) {
+                                this.pendingById.delete(id);
+                                reject(new Error('Превышено время ожидания ответа от сервера'));
+                                return;
+                            }
+
+                            const list = this.pendingByType.get(type);
+                            if (list) {
+                                const idx = list.findIndex(p => p._id === id);
+                                if (idx >= 0) {
+                                    const [p] = list.splice(idx, 1);
+                                    reject(new Error('Превышено время ожидания ответа от сервера'));
+                                    clearTimeout(p.timer);
+                                } else {
+                                    reject(new Error('Превышено время ожидания ответа от сервера'));
+                                }
+                            } else {
+                                reject(new Error('Превышено время ожидания ответа от сервера'));
+                            }
+                        }, timeoutMs);
+
+                        this.pendingById.set(id, {
+                            resolve,
+                            reject,
+                            timer
+                        });
+                        const list = this.pendingByType.get(type) || [];
+                        const typedPending = {
+                            resolve,
+                            reject,
+                            timer,
+                            _id: id
+                        };
+                        list.push(typedPending);
+                        // сохраняем назад
+                        this.pendingByType.set(type, list);
+
+                        if (this.ready) this._send(payload);
+                        else this.queue.push(payload);
+                    });
+                }
+
+                _send(payload) {
+                    try {
+                        this.ws.send(JSON.stringify(payload));
+                    } catch (e) {
+                        // Если отправка не удалась — отклоняем связанные ожидания
+                        if (payload && typeof payload.id !== 'undefined') {
+                            const pending = this.pendingById.get(payload.id);
+                            if (pending) {
+                                this.pendingById.delete(payload.id);
+                                clearTimeout(pending.timer);
+                                pending.reject(new Error('Не удалось отправить сообщение'));
+                            }
+                            const list = this.pendingByType.get(payload.type);
+                            if (list) {
+                                const idx = list.findIndex(p => p._id === payload.id);
+                                if (idx >= 0) {
+                                    const [p] = list.splice(idx, 1);
+                                    clearTimeout(p.timer);
+                                    p.reject(new Error('Не удалось отправить сообщение'));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                reconnect() {
+                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                        this.ws.close();
+                    }
+                }
+
+                disconnect() {
+                    this.shouldReconnect = false;
+                    if (this.ws) this.ws.close();
+                }
+            }
+
+            const wsClient = new WebSocketClient(WS_URL);
+
+            // ---------- API слой ----------
+            const api = {
+                register: async(data) => {
+                    const response = await wsClient.sendWithResponse('register', data);
+                    return response; // ожидаем { action: 'register_success', token, username, role, ... }
+                },
+                login: async(identifier, password) => {
+                    const response = await wsClient.sendWithResponse('login', {
+                        identifier,
+                        password,
+                        token: localStorage.getItem('auth_token') || undefined
+                    });
+                    return response; // ожидаем { action: 'login_success', token, username, role, ... }
+                }
+            };
+
+            // ---------- UI элементы ----------
+            const formTitle = document.getElementById('form-title');
+            const authForm = document.getElementById('auth-form');
+
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+
+            const roleSelector = document.getElementById('role-selector');
+            const studentRoleTab = document.getElementById('student-role-tab');
+            const moderatorRoleTab = document.getElementById('moderator-role-tab');
+
+            const loginFields = document.getElementById('login-fields');
+            const registerFields = document.getElementById('register-fields');
+            const studentSpecificFields = document.getElementById('student-specific-fields');
+            const moderatorSpecificFields = document.getElementById('moderator-specific-fields');
+
+            const messageContainer = document.getElementById('message-container');
+            const submitButton = document.getElementById('submit-button');
+            const submitText = document.getElementById('submit-text');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+
+            const updateUI = () => {
+                messageContainer.textContent = '';
+
+                const updateTabStyle = (activeTab, inactiveTab) => {
+                    activeTab.classList.add('bg-indigo-600', 'text-white', 'shadow');
+                    activeTab.classList.remove('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100', 'dark:hover:bg-slate-700');
+                    inactiveTab.classList.remove('bg-indigo-600', 'text-white', 'shadow');
+                    inactiveTab.classList.add('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100', 'dark:hover:bg-slate-700');
+                };
+
+                if (mode === 'login') {
+                    updateTabStyle(loginTab, registerTab);
+                    formTitle.textContent = 'Вход';
+                    submitText.textContent = 'Войти';
+                    setSubmitIcon('log-in');
+
+                    roleSelector.classList.add('hidden');
+                    loginFields.classList.remove('hidden');
+                    registerFields.classList.add('hidden');
+                    forgotPasswordLink.classList.remove('hidden');
+
+                    document.getElementById('login-identifier').required = true;
+                    document.getElementById('login-password').required = true;
+
+                    Array.from(registerFields.querySelectorAll('input')).forEach(input => input.required = false);
+                } else {
+                    updateTabStyle(registerTab, loginTab);
+                    formTitle.textContent = 'Регистрация';
+                    submitText.textContent = 'Создать аккаунт';
+                    setSubmitIcon('user-plus');
+
+                    roleSelector.classList.remove('hidden');
+                    loginFields.classList.add('hidden');
+                    registerFields.classList.remove('hidden');
+                    forgotPasswordLink.classList.add('hidden');
+
+                    document.getElementById('login-identifier').required = false;
+                    document.getElementById('login-password').required = false;
+
+                    document.getElementById('register-firstName').required = true;
+                    document.getElementById('register-lastName').required = true;
+                    document.getElementById('register-password').required = true;
+                    document.getElementById('register-confirmPassword').required = true;
+
+                    if (role === 'student') {
+                        updateTabStyle(studentRoleTab, moderatorRoleTab);
+                        studentSpecificFields.classList.remove('hidden');
+                        moderatorSpecificFields.classList.add('hidden');
+                        document.getElementById('register-email').required = true;
+                        document.getElementById('register-photo').required = true;
+                        document.getElementById('register-invite-code').required = true;
+                        document.getElementById('register-cameraId').required = false;
+                    } else {
+                        updateTabStyle(moderatorRoleTab, studentRoleTab);
+                        studentSpecificFields.classList.add('hidden');
+                        moderatorSpecificFields.classList.remove('hidden');
+                        document.getElementById('register-cameraId').required = true;
+                        document.getElementById('register-email').required = false;
+                        document.getElementById('register-photo').required = false;
+                        document.getElementById('register-invite-code').required = false;
+                    }
+                }
+
+                if (window.lucide && typeof lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                }
+            };
+
+            loginTab.addEventListener('click', () => {
+                mode = 'login';
+                updateUI();
+            });
+            registerTab.addEventListener('click', () => {
+                mode = 'register';
+                updateUI();
+            });
+            studentRoleTab.addEventListener('click', () => {
+                role = 'student';
+                updateUI();
+            });
+            moderatorRoleTab.addEventListener('click', () => {
+                role = 'moderator';
+                updateUI();
+            });
+
+            // ---------- Обработка формы ----------
+            authForm.addEventListener('submit', async(e) => {
+                e.preventDefault();
+                messageContainer.textContent = '';
+
+                submitButton.disabled = true;
+                const originalText = submitText.textContent;
+                submitText.textContent = 'Загрузка...';
+
+                try {
+                    if (mode === 'register') {
+                        const password = document.getElementById('register-password').value.trim();
+                        const confirmPassword = document.getElementById('register-confirmPassword').value.trim();
+
+                        if (password !== confirmPassword) {
+                            showMessage('Пароли не совпадают.', 'error');
+                            return;
+                        }
+                        if (password.length < 6) {
+                            showMessage('Пароль должен содержать не менее 6 символов.', 'error');
+                            return;
+                        }
+
+                        const firstName = document.getElementById('register-firstName').value.trim();
+                        const lastName = document.getElementById('register-lastName').value.trim();
+
+                        const registrationData = {
+                            role,
+                            userName: `${firstName} ${lastName}`.trim(),
+                            firstName,
+                            lastName,
+                            password,
+                            username: role === 'student' ?
+                                (document.getElementById('register-email').value.trim().split('@')[0] || '') : document.getElementById('register-cameraId').value.trim()
+                        };
+
+                        if (role === 'student') {
+                            const email = document.getElementById('register-email').value.trim();
+                            const inviteCode = document.getElementById('register-invite-code').value.trim();
+                            registrationData.email = email;
+                            registrationData.inviteCode = inviteCode;
+
+                            const photoFile = document.getElementById('register-photo').files[0];
+                            if (photoFile) {
+                                // Преобразование в DataURL (для отправки по WS)
+                                registrationData.photo = await readFileAsDataURL(photoFile);
+                            }
+                        } else {
+                            registrationData.cameraId = document.getElementById('register-cameraId').value.trim();
+                        }
+
+                        const result = await api.register(registrationData);
+                        if (result && result.action === 'register_success') {
+                            showMessage('Регистрация прошла успешно! Перенаправление...', 'success');
+                            saveUserData({...result,
+                                ...registrationData
+                            });
+                            window.location.href = '/';
+                        } else {
+                            showMessage(result && result.error ? result.error : 'Ошибка при регистрации', 'error');
+                        }
+                    } else {
+                        // Вход
+                        const identifier = document.getElementById('login-identifier').value.trim();
+                        const password = document.getElementById('login-password').value.trim();
+
+                        const result = await api.login(identifier, password);
+                        if (result && result.action === 'login_success') {
+                            showMessage('Вы успешно вошли в систему! Перенаправление...', 'success');
+
+                            const enriched = {
+                                ...result,
+                                email: identifier.includes('@') ? identifier : undefined,
+                                cameraId: !identifier.includes('@') ? identifier : undefined
+                            };
+                            saveUserData(enriched);
+
+                            window.location.href = '/';
+                        } else {
+                            showMessage(result && result.error ? result.error : 'Ошибка входа', 'error');
+                        }
+                    }
+                } catch (error) {
+                    showMessage(error && error.message ? error.message : 'Произошла ошибка. Попробуйте позже.', 'error');
+                } finally {
+                    submitButton.disabled = false;
+                    submitText.textContent = originalText;
+                }
+            });
+
+            updateUI();
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
+
+            window.addEventListener('beforeunload', () => {
+                wsClient.disconnect();
+                if (previewUrl) URL.revokeObjectURL(previewUrl);
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/ima/icon.svg" type="image/svg">
+    <title>Smart School Vision</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="/static/grafik.js"></script>
+    <script type="module" src="/static/rasp.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Nunito" />
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <link href="/static/site.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+    <div class="connection-status" id="connectionStatus">Подключение...</div>
+
+    <div class="container">
+        <div class="menu">
+
+            <div class="logo">
+                <img src="/static/ima/Logo and company.svg" alt="Company Logo">
+            </div>
+
+            <div class="menu-items">
+                <a href="/" class="menu-item">
+                    <img src="/static/ima/Dashboard2.svg" alt="Dashboard">
+                </a>
+                <a href="#" class="menu-item active">
+                    <img src="/static/ima/Analytics2.svg" alt="Analytics">
+                </a>
+                <a href="/spisk" class="menu-item">
+                    <img src="/static/ima/Schedule.svg" alt="Schedule">
+                </a>
+                <a href="/camera" class="menu-item">
+                    <img src="/static/ima/Camera.svg" alt="Schedule">
+                </a>
+            </div>
+
+            <a href="#" class="menu-item">
+                <img src="/static/ima/Illustration.jpg" alt="Illustration">
+            </a>
+            <div class="profile-section">
+                <img src="static/ima/ic3.svg" alt="Profile" class="profile-picture">
+                <div class="info">
+                    <strong id="user-name">Загрузка...</strong>
+                    <span id="user-role">...</span>
+                </div>
+                <div class="logout-icon" onclick="logout()">
+                    <img src="/static/ima/logout.svg" alt="Logout">
+                </div>
+            </div>
+        </div>
+
+        <div class="osn">
+            <div class="name">
+                Графики
+            </div>
+
+            <div class="analytics">
+                <div class="chart-container" id="lineContainer">
+                    <h3>Статистика опозданий по дням недели</h3>
+                    <div id="lateByWeekdayChart"></div>
+                </div>
+                <div class="chart-container" id="pieContainer">
+                    <h3>Наличие светоотражающих элементов</h3>
+                    <div id="flickerPieChart"></div>
+                </div>
+            </div>
+
+            <div class="analytics">
+                <div class="chart-container" id="lineContainer">
+                    <h3>Динамика использования светоотражателей</h3>
+                    <div id="flickerDynamicsChart"></div>
+                </div>
+                <div class="chart-container" id="pieContainer">
+                    <h3>Эмоциональный климат</h3>
+                    <div id="emotionalClimateChart"></div>
+                </div>
+            </div>
+
+            <div class="analytics">
+                <div class="chart-container" id="lineContainer">
+                    <h3>Индекс эмоционального состояния</h3>
+                    <div id="emotionIndexChart"></div>
+                </div>
+                <div class="chart-container" id="pieContainer">
+                    <h3>Взаимосвязь времени и безопасности</h3>
+                    <div id="safetyTimeChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

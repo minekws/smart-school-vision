@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="static/ima/icon.svg" type="image/svg">
+    <title>Smart School Vision</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Nunito" />
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <link href="static/spisk.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="static/spisk.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="menu">
+
+            <div class="logo">
+                <img src="static/ima/Logo and company.svg" alt="Company Logo">
+            </div>
+
+            <div class="menu-items">
+                <a href="/" class="menu-item">
+                    <img src="static/ima/Dashboard2.svg" alt="Dashboard">
+                </a>
+                <a href="/grafik" class="menu-item">
+                    <img src="static/ima/Analytics.svg" alt="Analytics">
+                </a>
+                <a href="/spisk" class="menu-item active">
+                    <img src="static/ima/Schedule2.svg" alt="Schedule">
+                </a>
+                <a href="/camera" class="menu-item">
+                    <img src="static/ima/camera.svg" alt="Schedule">
+                </a>
+            </div>
+
+            <a href="#" class="menu-item">
+                <img src="static/ima/Illustration.jpg" alt="Illustration">
+            </a>
+
+            <div class="profile-section">
+                <img src="static/ima/ic3.svg" alt="Profile" class="profile-picture">
+                <div class="infoacc">
+                    <strong id="user-name">Загрузка...</strong>
+                    <span id="user-role">...</span>
+                </div>
+                <div class="logout-icon" onclick="logout()">
+                    <img src="static/ima/logout.svg" alt="Logout">
+                </div>
+            </div>
+        </div>
+
+        <div class="osn">
+            <div id="notification-container" class="notification"></div>
+            <div class="spk">
+                <div class="name">
+                    Список учащихся
+                </div>
+                <div class="button-group">
+                    <button class="add" id="addBtn">
+                        + Добавить
+                    </button>
+                    <button class="add" id="createCodeBtn">
+                        Создать код
+                    </button>
+                </div>
+            </div>
+            <table id="customerTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Id &#8597;</th>
+                        <th onclick="sortTable(1)">Имя &#8597;</th>
+                        <th onclick="sortTable(2)">Почта &#8597;</th>
+                        <th onclick="sortTable(3)">Аккаунт&#8597;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="info">
+            <div id="userInfoPanel" class="user-card">
+                <div class="user-header">
+                    <img src="" alt="Аватар" onerror="this.src='static/ima/ic3.svg';" class="profile-picture" id="userAvatarInfo">
+                    <h2 id="userNameInfo"></h2>
+                    <p id="userRoleInfo"></p>
+                </div>
+
+                <div class="user-section">
+                    <h4>Информация</h4>
+                    <div class="user-info-item"><span></span><span id="userEmailInfo"></span></div>
+                </div>
+
+                <div class="user-section">
+                    <span id="lastDetectedInfo"></span>
+                    <div id="activityChart"></div>
+                </div>
+            </div>
+            <div class="add-customer-modal" id="addCustomerModal">
+                <div class="add-customer-content">
+                    <button class="close-modal" id="closeAddCustomer">&times;</button>
+                    <h2>Добавить</h2>
+                    <div class="avatar-upload">
+                        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+                        <label for="avatarInput" class="avatar-preview" id="avatarPreview">
+                        <span class="camera-icon">
+                            <img src="./static/ima/phot.svg" alt="pht" />
+                        </span>
+                    </label>
+                    </div>
+                    <form id="addCustomerForm">
+                        <label>Имя</label>
+                        <input type="text" name="firstName" placeholder="Иван" required>
+                        <label>Фамилия</label>
+                        <input type="text" name="lastName" placeholder="Иванов" required>
+                        <label>Почта</label>
+                        <input type="email" name="email" placeholder="Example@gmail.com" required>
+                        <label>Пароль</label>
+                        <input id="register-password" type="password" name="password" placeholder="Пароль" required>
+                        <span id="message"></span>
+                        <label>Тип аккаунта</label>
+                        <select name="accon" required>
+                            <option value="Ученик">Ученик</option>
+                            <option value="Админ">Админ</option>
+                        </select>
+                        <button type="submit" class="add-btn" style="width:100%;margin-top:24px;">Добавить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="confirm-modal" id="confirmModal">
+            <div class="confirm-content">
+                <p>Вы точно хотите удалить аккаунт?</p>
+                <button id="confirmDeleteBtn" class="add-btn" style="background:#ff4a7a;">Удалить</button>
+                <button id="cancelDeleteBtn" class="add-btn" style="background:#eee;color:#333;">Отмена</button>
+            </div>
+        </div>
+</body>
+
+</html>
