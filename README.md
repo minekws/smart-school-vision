@@ -40,12 +40,6 @@ SmartSchool Vision is a modular vision-driven school operations system built aro
   <img src="аи/class.png" alt="SmartSchool Vision desktop preview" width="760">
 </p>
 
-<p align="center">
-  <a href="graphify-out/graph.html">
-    <img src="аи/class.png" alt="Interactive architecture graph preview" width="760">
-  </a>
-</p>
-
 The repository intentionally excludes identifiable people, faces, account databases, runtime logs, and model weights from Git. The visuals above are clean demo assets and non-identifying UI previews.
 
 ## Architecture
