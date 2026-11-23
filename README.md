@@ -1,12 +1,8 @@
-<p align="center">
-  <img src="аи/class.png" alt="SmartSchool Vision hero preview" width="100%">
-</p>
-
 <h1 align="center">SmartSchool Vision</h1>
 
 <p align="center">
-  <strong>Edge-first AI campus operations platform</strong><br>
-  Privacy-aware computer vision for classroom monitoring, attendance intelligence, and safety-event response.
+  <strong>Local computer vision for classroom attendance</strong><br>
+  An OpenCV and YOLO camera runtime sends events to a FastAPI dashboard over WebSockets.
 </p>
 
 <p align="center">
@@ -16,6 +12,21 @@
   <img alt="Graphify" src="https://img.shields.io/badge/Architecture-Graphify-111827">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-2EA44F">
 </p>
+
+## Entrance demo
+
+[![SmartSchool Vision showing YOLO pose, an expression label, and the web dashboard](demo/entrance-live.jpg)](https://github.com/minekws/smart-school-vision/releases/download/entrance-demo/SmartSchool-Vision-Live-Demo.mp4)
+
+[**Download the 20-second demo · 1080p MP4**](https://github.com/minekws/smart-school-vision/releases/download/entrance-demo/SmartSchool-Vision-Live-Demo.mp4)
+
+The demo feeds recorded entrance footage through the project's local camera service and FastAPI backend. The camera draws YOLO pose landmarks and labels visible facial expressions. The backend receives two recognition events over WebSocket and shows the fictional names in the web dashboard.
+
+- **0:00** Close-up of the camera output with pose landmarks and an expression label.
+- **0:02** Camera output alongside controls and recent detections from the web interface.
+- **0:08** The main dashboard displays both saved recognition events.
+- **0:14** A separate test image triggers a weapon-detection box and a critical log entry. The edit reproduces the application’s siren tones.
+
+Entrance footage by [PNW Production on Pexels](https://www.pexels.com/video/men-passing-by-door-8275796/). Test image by [Lou Rivera, U.S. Department of Defense](https://commons.wikimedia.org/wiki/File:DA-SC-92-01299.jpg).
 
 > [!IMPORTANT]
 > This repository is an educational prototype and research-oriented platform. It is not a medical, disciplinary, or production surveillance product. Any deployment involving minors, biometrics, emotion inference, or safety alerts must include consent, legal review, human oversight, retention limits, and a documented governance process.
@@ -33,14 +44,6 @@ SmartSchool Vision is a modular vision-driven school operations system built aro
 - Attendance, roster, schedule, and analytics views in one control plane
 - Desktop launchers for edge-first local operation
 - Secure session handling and atomic JSON updates
-
-## Product Preview
-
-<p align="center">
-  <img src="аи/class.png" alt="SmartSchool Vision desktop preview" width="760">
-</p>
-
-The repository intentionally excludes identifiable people, faces, account databases, runtime logs, and model weights from Git. The visuals above are clean demo assets and non-identifying UI previews.
 
 ## Architecture
 
