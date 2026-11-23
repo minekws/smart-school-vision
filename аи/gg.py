@@ -162,14 +162,25 @@ class FrameSkipper:
         return False
 
 class CameraCapture:
-    def __init__(self, cam_id: int, max_failures: int = 30):
+    def __init__(self, cam_id: int, max_failures: int = 30, source: Optional[str] = None):
         self.cam_id = cam_id
-        self.cap = cv2.VideoCapture(cam_id)
+        self.source = source
+        self.cap = cv2.VideoCapture(source if source is not None else cam_id)
         self.fail_count = 0
         self.max_failures = max_failures
+        self.frame_interval = 1 / (self.cap.get(cv2.CAP_PROP_FPS) or 30) if source else 0
+        self.last_frame_at = 0.0
 
     def read(self) -> Tuple[bool, Optional[np.ndarray]]:
+        if self.source is not None:
+            delay = self.frame_interval - (time.monotonic() - self.last_frame_at)
+            if delay > 0:
+                time.sleep(delay)
+            self.last_frame_at = time.monotonic()
         ret, frame = self.cap.read()
+        if not ret and self.source is not None:
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            ret, frame = self.cap.read()
         if not ret:
             self.fail_count += 1
             if self.fail_count >= self.max_failures:
@@ -182,7 +193,7 @@ class CameraCapture:
         logger.warning(f"🔄 Переподключение камеры {self.cam_id}...")
         self.cap.release()
         time.sleep(1)
-        self.cap = cv2.VideoCapture(self.cam_id)
+        self.cap = cv2.VideoCapture(self.source if self.source is not None else self.cam_id)
         self.fail_count = 0
         if self.cap.isOpened():
             logger.info(f"✓ Камера {self.cam_id} переподключена")
@@ -506,7 +517,7 @@ def generate_mjpeg(cam_id: int):
 @app.get("/login", response_class=HTMLResponse)
 @app.get("/", response_class=HTMLResponse)
 async def show_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="login.html")
 
 @app.post(f"/{CAMERA_ID}/api/shutdown")
 async def shutdown_server():
@@ -520,7 +531,7 @@ async def shutdown_server():
 
 @app.get(f"/{CAMERA_ID}/dashboard", response_class=HTMLResponse)
 async def show_dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="dashboard.html")
 
 
 @app.post(f"/{CAMERA_ID}/api/toggle_module")
@@ -970,7 +981,7 @@ def process_frame(
         if fl_status:
             labels.append(f"Flicker: {fl_conf:.0%}")
         if dom_emotion:
-            labels.append(f"Emotion: {dom_emotion[:3]} {d_conf:.0%}")
+            labels.append(f"Emotion: {dom_emotion} {d_conf:.0%}")
 
         for j, part in enumerate(labels):
             cv2.putText(
@@ -1029,6 +1040,7 @@ async def camera_loop(
     weapon_model,
     reflector_model,
     pose_model,
+    source=None,
 ):
     global current_fps
     cameras: List[CameraCapture] = []
@@ -1036,8 +1048,8 @@ async def camera_loop(
 
     def init_cameras():
         logger.info("Поиск доступных камер...")
-        for i in range(10):
-            cap = CameraCapture(i)
+        for i in range(1 if source is not None else 10):
+            cap = CameraCapture(i, source=source)
             if cap.is_opened():
                 ok, _ = cap.read()
                 if ok:
@@ -1140,12 +1152,14 @@ async def camera_loop(
 
 
 async def connect_to_server(
-    face_mgr, emotion_model, weapon_model, reflector_model, pose_model
+    face_mgr, emotion_model, weapon_model, reflector_model, pose_model,
+    source=None, server_url=None, server_headers=None,
 ):
     while not shutdown_event.is_set():
         try:
             async with websockets.connect(
-                CONFIG["ws_url"],
+                server_url or CONFIG["ws_url"],
+                additional_headers=server_headers,
                 ping_interval=20,
                 ping_timeout=60,
                 max_size=None,
@@ -1161,6 +1175,7 @@ async def connect_to_server(
                     weapon_model,
                     reflector_model,
                     pose_model,
+                    source,
                 )
         except Exception as e:
             if shutdown_event.is_set():
@@ -1171,16 +1186,22 @@ async def connect_to_server(
             )
             await asyncio.sleep(CONFIG["reconnect_delay"])
 
-def run_server():
+def run_server(host="0.0.0.0"):
     uvicorn.run(
         app,
-        host="0.0.0.0",
+        host=host,
         port=STREAM_PORT,
         log_level="warning",
     )
 
-async def main():
-    global face_manager
+async def main(*, source=None, stream_host="0.0.0.0", stream_port=None, server_url=None,
+               server_headers=None):
+    global face_manager, STREAM_PORT
+
+    if stream_port is not None:
+        STREAM_PORT = stream_port
+    if source is not None:
+        AI_MODULES_STATE["pose"] = True
 
     def _signal_handler(sig, _frame):
         logger.info("⏻ Получен сигнал завершения")
@@ -1226,7 +1247,7 @@ async def main():
         CONFIG["paths"]["known_faces"], mtcnn_model, resnet_model, dev
     )
 
-    threading.Thread(target=run_server, daemon=True).start()
+    threading.Thread(target=run_server, args=(stream_host,), daemon=True).start()
     logger.info(
         f"✓ API и Дашборд запущены на"
         f" http://127.0.0.1:{STREAM_PORT}/{CAMERA_ID}/dashboard"
@@ -1240,6 +1261,9 @@ async def main():
         weapon_model=weapon_model,
         reflector_model=reflector_model,
         pose_model=pose_model,
+        source=source,
+        server_url=server_url,
+        server_headers=server_headers,
     )
 
 

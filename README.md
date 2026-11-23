@@ -109,6 +109,18 @@ launcher.py     Desktop launcher entry point
 
 ## Quick Start
 
+### Windows executables
+
+Download the Windows x64 [server](https://github.com/minekws/smart-school-vision/releases/download/entrance-demo/SmartSchoolVision-Server.exe) and [camera](https://github.com/minekws/smart-school-vision/releases/download/entrance-demo/SmartSchoolVision-Camera.exe). Start the server first, then start the camera. The executables share a local data directory at `%LOCALAPPDATA%\SmartSchoolVision`.
+
+- Open the [main site](http://127.0.0.1:8005/login) and register a moderator with camera ID `01` for a fresh installation.
+- Open the [camera dashboard](http://127.0.0.1:5000/01/dashboard) to see the local stream. The camera executable runs on CPU and downloads the FaceNet and pose checkpoints on first use.
+- To replay a file, run `./SmartSchoolVision-Camera.exe --video "C:\Videos\entrance.mp4"` in PowerShell. Use `Ctrl+C` in each console to stop the processes.
+
+To use your existing optional emotion, reflector, or weapon weights, place a `.env` file in the shared data directory with `EMOTION_MODEL`, `REFLECTOR_MODEL`, and `WEAPON_MODEL` set to the local paths. The build instructions and bundled dependency notices are in [windows_bundle](windows_bundle/README.md).
+
+### Run from source
+
 ### 1) Backend + dashboard
 
 ```powershell
